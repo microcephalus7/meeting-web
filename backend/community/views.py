@@ -1,12 +1,13 @@
 from django.http import HttpResponse
 from .models import Post
+import json
 
 # 글 전체 list
 
 
 def index(request):
-    postList = Post.objects.all()
-    context = {'postList': postList}
+    user = json.load(request)
+    return HttpResponse(json.dumps({'username': user['username']}))
 
 # 글 id 별 세부
 
