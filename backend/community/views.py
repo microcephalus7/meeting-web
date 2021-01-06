@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
-from .models import Post
+from .models import Post, Comment
 import json
 from django.utils import timezone
 
@@ -11,7 +11,7 @@ from django.utils import timezone
 def index(request):
     postList = Post.objects.all()
     data = list(
-        map(lambda x: {"title": x["title"], "body": x["body"], "id": x["id"]}, postList.values()))
+        map(lambda x: model_to_dict(x), postList))
     result = JsonResponse(data, safe=False)
     return result
 
@@ -23,15 +23,19 @@ def post(request):
     data = json.load(request)
     q = Post(title=data["title"],
              body=data["body"], pubDate=timezone.now())
+
     q.save()
     return JsonResponse(model_to_dict(q))
 
-# 글 id 별 세부
+# 글 디테일
 
 
 def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     obj = model_to_dict(post)
+    comments = [model_to_dict(i) for i in post.comment_set.all()]
+    obj["comments"] = comments
+
     result = JsonResponse(obj, safe=False)
     return result
 
@@ -61,17 +65,21 @@ def postDelete(request, pk):
 # 댓글 쓰기
 
 
-def commentPost(request):
-    request
+def commentPost(request, pk):
+    data = json.load(request)
+    post = get_object_or_404(Post, pk=pk)
+    post.comment_set.create(body=data["body"], pubDate=timezone.now())
+    return HttpResponse(True)
+
 
 # 댓글 수정
 
 
-def commentModify(request):
+def commentModify(request, pk, comment_id):
     request
 
 # 댓글 삭제
 
 
-def commentDelete(request):
+def commentDelete(request, comment_id):
     request
