@@ -1,4 +1,6 @@
 from django.http import HttpResponse, JsonResponse
+from django.forms.models import model_to_dict
+from django.shortcuts import get_object_or_404
 from .models import Post
 import json
 
@@ -7,16 +9,20 @@ import json
 
 def index(request):
     postList = Post.objects.all()
-    data = list(postList.values())
-    data2 = list(map(lambda x: {"title": x["title"], "body": x["body"]}, data))
-    result = JsonResponse(data2, safe=False)
+    data = list(
+        map(lambda x: {"title": x["title"], "body": x["body"], "id": x["id"]}, postList.values()))
+    result = JsonResponse(data, safe=False)
     return result
 
 # 글 id 별 세부
 
 
-def detail(request):
-    request
+def detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    obj = model_to_dict(post)
+    result = JsonResponse(obj, safe=False)
+    return result
+
 
 # 글 쓰기
 
