@@ -28,7 +28,7 @@ def detail(request, pk):
 # 글 쓰기
 
 
-def posting(request):
+def post(request):
     data = json.load(request)
     q = Post(title=data["title"],
              body=data["body"], pubDate=timezone.now())
@@ -51,7 +51,7 @@ def postDelete(request):
 # 댓글 쓰기
 
 
-def commentPosting(request):
+def commentPost(request):
     request
 
 # 댓글 수정
