@@ -77,12 +77,18 @@ def commentPost(request, pk):
 # 댓글 수정
 
 
-def commentModify(request, pk, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    result = model_to_dict(comment)
+def commentModify(request, pk, comment_id,):
+    data = json.load(request)
+    comment = get_object_or_404(comment, pk=comment_id)
+    comment.body = data["body"]
+    comment.save()
+    result = JsonResponse(model_to_dict(comment))
+    return result
 
 # 댓글 삭제
 
 
-def commentDelete(request, comment_id):
-    request
+def commentDelete(request, pk, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    comment.delete()
+    return JsonResponse(model_to_dict(comment))
