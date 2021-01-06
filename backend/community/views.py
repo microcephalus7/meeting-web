@@ -15,15 +15,6 @@ def index(request):
     result = JsonResponse(data, safe=False)
     return result
 
-# 글 id 별 세부
-
-
-def detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    obj = model_to_dict(post)
-    result = JsonResponse(obj, safe=False)
-    return result
-
 
 # 글 쓰기
 
@@ -35,18 +26,37 @@ def post(request):
     q.save()
     return JsonResponse(model_to_dict(q))
 
+# 글 id 별 세부
+
+
+def detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    obj = model_to_dict(post)
+    result = JsonResponse(obj, safe=False)
+    return result
+
 
 # 글 수정
 
 
-def postModify(request):
-    request
+def postModify(request, pk):
+    data = json.load(request)
+    post = get_object_or_404(Post, pk=pk)
+    post.title = data["title"]
+    post.body = data["body"]
+    post.save()
+    result = JsonResponse(model_to_dict(post))
+    return result
+
 
 # 글 삭제
 
 
-def postDelete(request):
-    request
+def postDelete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.delete()
+    return JsonResponse(model_to_dict(post))
+
 
 # 댓글 쓰기
 
