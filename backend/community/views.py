@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Post
 import json
 
@@ -6,8 +6,11 @@ import json
 
 
 def index(request):
-    user = json.load(request)
-    return HttpResponse(json.dumps({'username': user['username']}))
+    postList = Post.objects.all()
+    data = list(postList.values())
+    data2 = list(map(lambda x: {"title": x["title"], "body": x["body"]}, data))
+    result = JsonResponse(data2, safe=False)
+    return result
 
 # 글 id 별 세부
 
