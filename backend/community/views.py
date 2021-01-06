@@ -35,6 +35,7 @@ def detail(request, pk):
     obj = model_to_dict(post)
     comments = [model_to_dict(i) for i in post.comment_set.all()]
     obj["comments"] = comments
+    obj["commentsLength"] = post.comment_set.count()
 
     result = JsonResponse(obj, safe=False)
     return result
@@ -66,17 +67,19 @@ def postDelete(request, pk):
 
 
 def commentPost(request, pk):
-    data = json.load(request)
     post = get_object_or_404(Post, pk=pk)
-    post.comment_set.create(body=data["body"], pubDate=timezone.now())
-    return HttpResponse(True)
+    data = json.load(request)
+    comment = model_to_dict(post.comment_set.create(
+        body=data["body"], pubDate=timezone.now()))
+    return JsonResponse(comment)
 
 
 # 댓글 수정
 
 
 def commentModify(request, pk, comment_id):
-    request
+    comment = get_object_or_404(Comment, pk=comment_id)
+    result = model_to_dict(comment)
 
 # 댓글 삭제
 
