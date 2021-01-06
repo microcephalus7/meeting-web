@@ -3,6 +3,7 @@ from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
 from .models import Post
 import json
+from django.utils import timezone
 
 # 글 전체 list
 
@@ -28,7 +29,12 @@ def detail(request, pk):
 
 
 def posting(request):
-    request
+    data = json.load(request)
+    q = Post(title=data["title"],
+             body=data["body"], pubDate=timezone.now())
+    q.save()
+    return JsonResponse(model_to_dict(q))
+
 
 # 글 수정
 
