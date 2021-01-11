@@ -4,28 +4,26 @@ from django.shortcuts import get_object_or_404
 from .models import Post, Comment
 import json
 from django.utils import timezone
-
-# 글 전체 list
+from django.core import serializers
 
 
 def index(request):
-    postList = Post.objects.all()
-    data = list(
-        map(lambda x: model_to_dict(x), postList))
-    result = JsonResponse(data, safe=False)
-    return result
 
+    # 글 전체 list
+    if request.method == "GET":
+        posts = Post.objects.all()
+        postList = serializers.serialize('json', posts)
+        return HttpResponse(postList, content_type='application/json')
 
-# 글 쓰기
+    # 글 쓰기
+    if request.method == 'POST':
+        data = json.load(request)
+        q = Post(title=data["title"],
+                 body=data["body"], pubDate=timezone.now())
+        q.save()
+        newPost = serializers.serialize('json', q)
+        return HttpResponse(newPost, content_type='application/json')
 
-
-def post(request):
-    data = json.load(request)
-    q = Post(title=data["title"],
-             body=data["body"], pubDate=timezone.now())
-
-    q.save()
-    return JsonResponse(model_to_dict(q))
 
 # 글 디테일
 
