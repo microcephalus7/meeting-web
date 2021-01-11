@@ -5,8 +5,10 @@ from .models import Post, Comment
 import json
 from django.utils import timezone
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 
 
+@csrf_exempt
 def index(request):
 
     # 글 전체 list
@@ -30,13 +32,9 @@ def index(request):
 
 def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    obj = model_to_dict(post)
-    comments = [model_to_dict(i) for i in post.comment_set.all()]
-    obj["comments"] = comments
-    obj["commentsLength"] = post.comment_set.count()
 
-    result = JsonResponse(obj, safe=False)
-    return result
+    commentDetail = serializers.serialize('json', post)
+    return HttpResponse(commentDetail, content_type='application/json')
 
 
 # 글 수정
