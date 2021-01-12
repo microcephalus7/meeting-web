@@ -22,6 +22,7 @@ def index(request):
         data = json.load(request)
         post = Post(title=data["title"],
                     body=data["body"], pubDate=timezone.now())
+
         post.save()
         result = JsonResponse(model_to_dict(post))
         return result
@@ -63,9 +64,10 @@ def post(request, pk):
     # 댓글 작성
 
     if request.method == "POST":
-        comment = model_to_dict(post.comment_set.create(
-            body=data["body"], pubDate=timezone.now()))
-        result = JsonResponse(comment)
+        newComment = post.comment_set.create(
+            body=data["body"], pubDate=timezone.now())
+        newComment = model_to_dict(newComment)
+        result = JsonResponse(newComment)
         return result
 
 

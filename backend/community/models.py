@@ -1,10 +1,12 @@
 from django.db import models
+from account.models import Account
 
 
 class Post(models.Model):
     title = models.CharField(max_length=50)
     body = models.TextField(max_length=200)
     pubDate = models.DateTimeField('date published')
+    author = models.OneToOneField(Account, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
