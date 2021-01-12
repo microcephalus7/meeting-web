@@ -20,43 +20,39 @@ def index(request):
     # 글 쓰기
     if request.method == 'POST':
         data = json.load(request)
-        q = Post(title=data["title"],
-                 body=data["body"], pubDate=timezone.now())
-        q.save()
-        newPost = serializers.serialize('json', q)
-        return HttpResponse(newPost, content_type='application/json')
+        post = Post(title=data["title"],
+                    body=data["body"], pubDate=timezone.now())
+        post.save()
+        result = JsonResponse(model_to_dict(post))
+        return result
 
 
-# 글 디테일
-
-
-def detail(request, pk):
+@csrf_exempt
+def post(request, pk):
     post = get_object_or_404(Post, pk=pk)
-
-    commentDetail = serializers.serialize('json', post)
-    return HttpResponse(commentDetail, content_type='application/json')
-
-
-# 글 수정
-
-
-def postModify(request, pk):
     data = json.load(request)
-    post = get_object_or_404(Post, pk=pk)
-    post.title = data["title"]
-    post.body = data["body"]
-    post.save()
-    result = JsonResponse(model_to_dict(post))
-    return result
 
+    # 글 디테일
+    if request.method == "GET":
+        obj = model_to_dict(post)
+        comments = [model_to_dict(i) for i in post.comment_set.all()]
+        obj["comments"] = comments
+        obj["commentsLength"] = post.comment_set.count()
 
-# 글 삭제
+        result = JsonResponse(obj, safe=False)
+        return result
 
-
-def postDelete(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    post.delete()
-    return JsonResponse(model_to_dict(post))
+    # 글 수정
+    if request.method == "PATCH":
+        post.title = data["title"]
+        post.body = data["body"]
+        post.save()
+        result = JsonResponse(model_to_dict(post))
+        return result
+    if request.method == "DELETE":
+        post = get_object_or_404(Post, pk=pk)
+        post.delete()
+        return JsonResponse(model_to_dict(post))
 
 
 # 댓글 쓰기

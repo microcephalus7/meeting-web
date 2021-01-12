@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, ),
 
-    path('<int:pk>', views.detail, ),
+    path('<int:pk>', views.post),
     path('<int:pk>/modify', views.postModify, ),
     path('<int:pk>/delete', views.postDelete, ),
     path('<int:pk>/post', views.commentPost, ),
