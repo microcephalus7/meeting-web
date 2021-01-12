@@ -26,6 +26,8 @@ def index(request):
         result = JsonResponse(model_to_dict(post))
         return result
 
+# 글 관련
+
 
 @csrf_exempt
 def post(request, pk):
@@ -44,43 +46,45 @@ def post(request, pk):
 
     # 글 수정
     if request.method == "PATCH":
-        post.title = data["title"]
-        post.body = data["body"]
+        if data["title"]:
+            post.title = data["title"]
+        if data["body"]:
+            post.body = data["body"]
         post.save()
         result = JsonResponse(model_to_dict(post))
         return result
+
+    # 글 삭제
     if request.method == "DELETE":
         post = get_object_or_404(Post, pk=pk)
         post.delete()
         return JsonResponse(model_to_dict(post))
 
+    # 댓글 작성
 
-# 댓글 쓰기
-
-
-def commentPost(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    data = json.load(request)
-    comment = model_to_dict(post.comment_set.create(
-        body=data["body"], pubDate=timezone.now()))
-    return JsonResponse(comment)
+    if request.method == "POST":
+        comment = model_to_dict(post.comment_set.create(
+            body=data["body"], pubDate=timezone.now()))
+        result = JsonResponse(comment)
+        return result
 
 
-# 댓글 수정
+# 댓글 관련
 
 
-def commentModify(request, pk, comment_id,):
-    data = json.load(request)
+@csrf_exempt
+def comment(request, pk, comment_id):
     comment = get_object_or_404(comment, pk=comment_id)
-    comment.body = data["body"]
-    comment.save()
-    result = JsonResponse(model_to_dict(comment))
-    return result
+    data = json.load(request)
 
-# 댓글 삭제
+    # 댓글 수정
+    if request.method == "PATCH":
+        comment.body = data["body"]
+        comment.save()
+        result = JsonResponse(model_to_dict(comment))
+        return result
 
-
-def commentDelete(request, pk, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    comment.delete()
-    return JsonResponse(model_to_dict(comment))
+    # 댓글 삭제
+    if request.method == "DELETE":
+        comment.delete()
+        return JsonResponse(model_to_dict(comment))
