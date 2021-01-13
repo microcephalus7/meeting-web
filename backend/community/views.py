@@ -9,8 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from core.utils import tokenCheckDecorator
 
 
-@tokenCheckDecorator
 @csrf_exempt
+@tokenCheckDecorator
 def index(request):
 
     # 글 전체 list
@@ -22,20 +22,20 @@ def index(request):
     # 글 쓰기
     if request.method == 'POST':
         data = json.load(request)
-        post = Post(title=data["title"],
-                    body=data["body"], pubDate=timezone.now())
-
-        post.save()
-        result = JsonResponse(model_to_dict(post), safe=False)
+        newPost = request.account.post_set.create(
+            title=data["title"], body=data["body"], pubDate=timezone.now())
+        newPost.save()
+        result = JsonResponse(model_to_dict(newPost), safe=False)
         return result
 
 # 글 관련
 
 
 @csrf_exempt
+@tokenCheckDecorator
 def post(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    data = json.load(request.body)
+    data = json.load(request)
 
     # 글 디테일
     if request.method == "GET":
@@ -49,6 +49,8 @@ def post(request, pk):
 
     # 글 수정
     if request.method == "PATCH":
+        if request.account != post.author:
+            return JsonResponse("사용자의 글이 아닙니다", safe=False)
         if data["title"]:
             post.title = data["title"]
         if data["body"]:
@@ -59,6 +61,8 @@ def post(request, pk):
 
     # 글 삭제
     if request.method == "DELETE":
+        if request.account != post.author:
+            return JsonResponse("사용자의 글이 아닙니다", safe=False)
         post = get_object_or_404(Post, pk=pk)
         post.delete()
         return JsonResponse(model_to_dict(post))
