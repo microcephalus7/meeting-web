@@ -6,7 +6,7 @@ class Post(models.Model):
     title = models.CharField(max_length=50)
     body = models.TextField(max_length=200)
     pubDate = models.DateTimeField('date published')
-    author = models.OneToOneField(Account, on_delete=models.CASCADE)
+    author = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.title
