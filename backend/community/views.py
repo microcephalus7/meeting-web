@@ -6,8 +6,10 @@ import json
 from django.utils import timezone
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
+from core.utils import tokenCheckDecorator
 
 
+@tokenCheckDecorator
 @csrf_exempt
 def index(request):
 
@@ -24,7 +26,7 @@ def index(request):
                     body=data["body"], pubDate=timezone.now())
 
         post.save()
-        result = JsonResponse(model_to_dict(post))
+        result = JsonResponse(model_to_dict(post), safe=False)
         return result
 
 # 글 관련
@@ -33,7 +35,7 @@ def index(request):
 @csrf_exempt
 def post(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    data = json.load(request)
+    data = json.load(request.body)
 
     # 글 디테일
     if request.method == "GET":
@@ -77,7 +79,7 @@ def post(request, pk):
 @csrf_exempt
 def comment(request, pk, comment_id):
     comment = get_object_or_404(comment, pk=comment_id)
-    data = json.load(request)
+    data = json.load(request.body)
 
     # 댓글 수정
     if request.method == "PATCH":

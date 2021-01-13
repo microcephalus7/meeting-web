@@ -8,8 +8,10 @@ from account.models import Account
 
 def tokenCheckDecorator(func):
     def wrapper(request, *args, **kwargs):
+        token = request.COOKIES["token"]
+        if token == "None":
+            return JsonResponse("토큰값 없음", status=400, safe=False)
         try:
-            token = request.COOKIES["token"]
             token = jwt.decode(token, SECRET_KEY, algorithms="HS256")
             account = Account.objects.get(email=token["email"])
             request.account = account

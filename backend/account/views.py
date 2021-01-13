@@ -54,7 +54,10 @@ def index(request):
         return JsonResponse('계정이 존재하지 않습니다', safe=False)
     # 회원 수정
     if request.method == "PATCH":
-        return JsonResponse(request)
+        empty = None
+        result = JsonResponse("token delete", safe=False)
+        result.set_cookie('token', empty)
+        return result
 
     # 회원탈퇴
     if request.method == "DELETE":
