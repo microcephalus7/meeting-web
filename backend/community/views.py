@@ -89,7 +89,7 @@ def comment(request, pk, comment_id):
     # 댓글 수정
     if request.method == "PATCH":
         if request.account != comment.author:
-            return JsonResponse("사용자의 글이 아닙니다", safe=False)
+            return JsonResponse("사용자의 댓글이 아닙니다", safe=False)
         comment.body = data["body"]
         comment.save()
         result = JsonResponse(model_to_dict(comment))
@@ -98,6 +98,6 @@ def comment(request, pk, comment_id):
     # 댓글 삭제
     if request.method == "DELETE":
         if request.account != comment.author:
-            return JsonResponse("사용자의 글이 아닙니다", safe=False)
+            return JsonResponse("사용자의 댓글이 아닙니다", safe=False)
         comment.delete()
         return JsonResponse(model_to_dict(comment))

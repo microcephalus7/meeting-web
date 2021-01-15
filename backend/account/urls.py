@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path('', views.index, ),
-    path('token', views.tokenCheck)
+    path('token', views.tokenCheck),
+    path("profile", views.profile)
 ]

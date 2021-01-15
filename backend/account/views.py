@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
-from .models import Account
+from .models import Account, Profile
 import json
 from django.utils import timezone
 from django.core import serializers
@@ -11,6 +11,7 @@ from django.views import View
 import bcrypt
 import jwt
 from backend.settings import SECRET_KEY
+from core.utils import tokenCheckDecorator
 
 # Create your views here.
 
@@ -72,3 +73,20 @@ def tokenCheck(request):
         result = JsonResponse("검증된 사용자", safe=False)
         return result
     return JsonResponse("미검증 사용자", safe=False)
+
+
+# 프로필 관리
+@csrf_exempt
+@tokenCheckDecorator
+def profile(request):
+    account = request.account
+    requestData = json.load(request)
+    accountProfile = get_object_or_404(Profile, account=account)
+    if request.method == "GET":
+        return request
+    if request.method == "POST":
+        return request
+    if request.method == "PATCH":
+        return request
+    if request.method == "DELETE":
+        return request
