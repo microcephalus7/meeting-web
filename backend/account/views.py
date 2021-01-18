@@ -83,7 +83,9 @@ def profile(request):
     requestData = json.load(request)
     accountProfile = get_object_or_404(Profile, account=account)
     if request.method == "GET":
-        return request
+        result = serializers.serialize('json', accountProfile)
+        jsonResult = JsonResponse(result, safe=False)
+        return jsonResult
     if request.method == "POST":
         return request
     if request.method == "PATCH":
