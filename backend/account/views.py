@@ -90,10 +90,12 @@ def profile(request):
         newProfile = Profile(username=requestData["username"], phoneNumber=int(
             requestData["phoneNumber"]), male=requestData["male"], birthday=requestData["birthday"], latitude=requestData["latitude"], longitude=requestData["longitude"],
             account=account)
+        newProfile.save()
         newProfile = model_to_dict(newProfile)
         result = JsonResponse(newProfile, safe=False)
         return result
     if request.method == "PATCH":
-        return request
+        accountProfile = get_object_or_404(Profile, account=account)
+
     if request.method == "DELETE":
         return request
