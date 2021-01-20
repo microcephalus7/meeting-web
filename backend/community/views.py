@@ -82,6 +82,7 @@ def post(request, pk):
 
 
 @csrf_exempt
+@tokenCheckDecorator
 def comment(request, pk, comment_id):
     comment = get_object_or_404(comment, pk=comment_id)
     data = json.load(request.body)

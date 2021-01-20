@@ -11,8 +11,7 @@ from django.views import View
 import bcrypt
 import jwt
 from backend.settings import SECRET_KEY
-from core.utils import tokenCheckDecorator, profileCheckDecorator
-
+from core.utils import tokenCheckDecorator
 # Create your views here.
 
 
