@@ -11,7 +11,7 @@ from django.views import View
 import bcrypt
 import jwt
 from backend.settings import SECRET_KEY
-from core.utils import tokenCheckDecorator
+from core.utils import tokenCheckDecorator, profileCheckDecorator
 
 # Create your views here.
 
@@ -90,10 +90,13 @@ def profile(request):
     except:
         return JsonResponse("규격에 맞는 데이터를 넣어주세요", safe=False)
     if request.method == "GET":
-        accountProfile = get_object_or_404(Profile, account=account)
-        result = model_to_dict(accountProfile)
-        jsonResult = JsonResponse(result, safe=False)
-        return jsonResult
+        try:
+            accountProfile = get_object_or_404(Profile, account=account)
+            result = model_to_dict(accountProfile)
+            jsonResult = JsonResponse(result, safe=False)
+            return jsonResult
+        except Profile.DoesNotExist:
+            return JsonResponse("프로필이 존재하지 않습니다", status=400)
     if request.method == "POST":
         newProfile = Profile(username=requestData["username"], phoneNumber=int(
             requestData["phoneNumber"]), male=requestData["male"], birthday=requestData["birthday"], latitude=requestData["latitude"], longitude=requestData["longitude"],
