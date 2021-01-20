@@ -17,8 +17,8 @@ class Profile(models.Model):
     account = models.OneToOneField(Account, on_delete=models.CASCADE)
     pubDate = models.DateTimeField(auto_now_add=True, null=True)
     updateDate = models.DateTimeField(auto_now=True)
-    phoneNumber = models.TextField(max_length=12, null=True)
     username = models.TextField(max_length=20, null=True)
+    phoneNumber = models.TextField(max_length=12, null=True)
     male = models.BooleanField(null=True)
     birthday = models.DateField(null=True)
     latitude = models.FloatField(null=True)
@@ -29,3 +29,6 @@ class Profile(models.Model):
             return False
         else:
             return True
+
+    def __str__(self) -> str:
+        return self.username

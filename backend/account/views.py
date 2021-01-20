@@ -81,13 +81,18 @@ def tokenCheck(request):
 def profile(request):
     account = request.account
     requestData = json.load(request)
-    accountProfile = get_object_or_404(Profile, account=account)
     if request.method == "GET":
-        result = serializers.serialize('json', accountProfile)
+        accountProfile = get_object_or_404(Profile, account=account)
+        result = model_to_dict(accountProfile)
         jsonResult = JsonResponse(result, safe=False)
         return jsonResult
     if request.method == "POST":
-        return request
+        newProfile = Profile(username=requestData["username"], phoneNumber=int(
+            requestData["phoneNumber"]), male=requestData["male"], birthday=requestData["birthday"], latitude=requestData["latitude"], longitude=requestData["longitude"],
+            account=account)
+        newProfile = model_to_dict(newProfile)
+        result = JsonResponse(newProfile, safe=False)
+        return result
     if request.method == "PATCH":
         return request
     if request.method == "DELETE":

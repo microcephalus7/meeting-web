@@ -74,7 +74,7 @@ def post(request, pk):
             body=data["body"], pubDate=timezone.now())
         newComment.author = request.account
         newComment = model_to_dict(newComment)
-        result = JsonResponse(newComment)
+        result = JsonResponse(newComment, safe=False)
         return result
 
 
