@@ -18,18 +18,22 @@ from core.utils import tokenCheckDecorator
 
 @csrf_exempt
 def index(request):
-    data = json.load(request)
-    accountCheck = Account.objects.filter(email=data["email"])
+    try:
+        requestData = json.load(request)
+    except:
+        return JsonResponse("규격에 맞는 데이터를 넣어주세요", safe=False)
+
+    accountCheck = Account.objects.filter(email=requestData["email"])
     # 회원가입
     if request.method == "POST":
         if accountCheck.exists():
             return JsonResponse('이미 가입 이력이 존재합니다', safe=False)
 
-        password = data["password"].encode('utf-8')
+        password = requestData["password"].encode('utf-8')
         passwordCrypt = bcrypt.hashpw(password, bcrypt.gensalt())
         passwordCrypt = passwordCrypt.decode('utf-8')
         newAccount = Account(
-            email=data["email"], password=passwordCrypt)
+            email=requestData["email"], password=passwordCrypt)
         newAccount.save()
         token = jwt.encode({'email': newAccount.email, 'exp': timezone.now()+timezone.timedelta(days=7)},
                            SECRET_KEY, algorithm="HS256")
@@ -41,8 +45,8 @@ def index(request):
     # 로그인
     if request.method == "GET":
         if accountCheck.exists():
-            account = Account.objects.get(email=data["email"])
-            if bcrypt.checkpw(data["password"].encode('utf-8'), account.password.encode('utf-8')):
+            account = Account.objects.get(email=requestData["email"])
+            if bcrypt.checkpw(requestData["password"].encode('utf-8'), account.password.encode('utf-8')):
                 token = jwt.encode({'email': account.email, 'exp': timezone.now(
                 )+timezone.timedelta(days=7)}, SECRET_KEY, algorithm="HS256")
                 result = JsonResponse(model_to_dict(
@@ -79,8 +83,12 @@ def tokenCheck(request):
 @csrf_exempt
 @tokenCheckDecorator
 def profile(request):
+
     account = request.account
-    requestData = json.load(request)
+    try:
+        requestData = json.load(request)
+    except:
+        return JsonResponse("규격에 맞는 데이터를 넣어주세요", safe=False)
     if request.method == "GET":
         accountProfile = get_object_or_404(Profile, account=account)
         result = model_to_dict(accountProfile)
@@ -96,6 +104,9 @@ def profile(request):
         return result
     if request.method == "PATCH":
         accountProfile = get_object_or_404(Profile, account=account)
-
+        requestKey = requestData.keys()
+        if not requestKey:
+            return JsonResponse("request 객체가 비었습니다", safe=False)
+        return JsonResponse("request 확인", safe=False)
     if request.method == "DELETE":
         return request
