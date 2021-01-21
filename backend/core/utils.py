@@ -21,6 +21,7 @@ def tokenCheckDecorator(func):
             return JsonResponse('유효하지 않은 토큰', status=400)
         except Account.DoesNotExist:
             return JsonResponse('해당 유저가 없습니다', status=400)
+        # 프로필 탐색
         try:
             profile = Profile.objects.get(account=account)
             request.profile = profile
