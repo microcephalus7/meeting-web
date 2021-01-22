@@ -1,9 +1,11 @@
-import React from 'react';
+import React from "react";
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <div>
-      
+      <div>
+        <div></div>
+      </div>
     </div>
   );
 };
